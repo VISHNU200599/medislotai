@@ -1,8 +1,30 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="64" height="64" rx="16" fill="#1565C0" />
-  <path d="M 18 18 V 34 C 18 42, 32 40, 32 28 C 32 40, 46 42, 46 34 V 18" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-  <path d="M 32 28 V 44" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" />
-  <circle cx="18" cy="15" r="3.5" fill="#FFFFFF" />
-  <circle cx="46" cy="15" r="3.5" fill="#FFFFFF" />
-  <circle cx="32" cy="49" r="6" fill="#FFFFFF" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- MediSlot AI — Primary Logo Icon -->
+  <!-- Abstract stethoscope forming an M shape -->
+  <!-- Rounded square container: Medical Blue #1565C0 -->
+  <rect width="64" height="64" rx="14" fill="#1565C0"/>
+
+  <!-- Monoline stethoscope-M: two earpiece arcs meeting at center, drop tube, chest piece -->
+  <!-- Left arc: left earbud → left valley of M -->
+  <path
+    d="M 14 16 C 14 13, 17 11, 20 11 C 23 11, 26 13, 26 16 L 26 28"
+    stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+  />
+  <!-- Center valley of M down to tube -->
+  <path
+    d="M 26 28 C 26 34, 38 34, 38 28"
+    stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+  />
+  <!-- Right arc: right valley of M → right earbud -->
+  <path
+    d="M 38 28 L 38 16 C 38 13, 41 11, 44 11 C 47 11, 50 13, 50 16"
+    stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+  />
+  <!-- Drop tube from center bottom of M arc downward -->
+  <path
+    d="M 32 34 L 32 45"
+    stroke="white" stroke-width="4" stroke-linecap="round" fill="none"
+  />
+  <!-- Chest piece: clean circle -->
+  <circle cx="32" cy="50" r="5" stroke="white" stroke-width="3.5" fill="none"/>
 </svg>

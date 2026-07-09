@@ -1,0 +1,20 @@
+{
+  "name": "MediSlot AI",
+  "short_name": "MediSlot",
+  "description": "Intelligent Healthcare Platform — Book appointments with verified doctors",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EAF6FB",
+  "theme_color": "#1565C0",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "medical", "productivity"],
+  "lang": "en-US"
+}

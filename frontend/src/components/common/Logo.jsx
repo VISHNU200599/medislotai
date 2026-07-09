@@ -1,72 +1,195 @@
 // src/components/common/Logo.jsx
-import React from "react";
+// MediSlot AI — Premium Brand Logo System
+// Abstract monoline stethoscope forming an "M" shape
+// Designed to meet startup-quality standards: Apple Health / Stripe aesthetic
+
 import { Link } from "react-router-dom";
 
-export default function Logo({ variant = "primary", size = "md", to = "/" }) {
-  const isDark = variant === "monochrome";
-  const isCompact = variant === "compact";
+/**
+ * MediSlot AI Logo
+ *
+ * @param {"primary" | "monochrome" | "monochrome-dark" | "icon-only"} variant
+ *   primary          = blue icon + dark text (default, for light backgrounds)
+ *   monochrome       = white icon + white text (for dark/sidebar backgrounds)
+ *   monochrome-dark  = dark icon + dark text (for light backgrounds without color)
+ *   icon-only        = renders only the icon square, no wordmark
+ *
+ * @param {"xs" | "sm" | "md" | "lg" | "xl"} size
+ */
+export default function Logo({ variant = "primary", size = "md", to = "/", style = {} }) {
+  const isWhite = variant === "monochrome";
+  const isIconOnly = variant === "icon-only";
 
-  const iconSizes = {
-    sm: 26,
-    md: 34,
-    lg: 42,
-  };
+  // Icon dimensions
+  const iconSize = { xs: 22, sm: 28, md: 36, lg: 44, xl: 56 }[size] || 36;
 
-  const textSizes = {
-    sm: "1.15rem",
-    md: "1.4rem",
-    lg: "1.65rem",
-  };
+  // Text dimensions
+  const textSize = { xs: "0.9rem", sm: "1.1rem", md: "1.35rem", lg: "1.6rem", xl: "2rem" }[size] || "1.35rem";
 
-  const iconSize = iconSizes[size] || 34;
-  const textSize = textSizes[size] || "1.4rem";
+  // ── Icon colors ──────────────────────────────────────────────────────────
+  const containerFill =
+    variant === "monochrome"
+      ? "rgba(255,255,255,0.14)"
+      : variant === "monochrome-dark"
+      ? "#EDF7FF"
+      : "#1565C0";
 
-  // Stethoscope forming the letter "M" inside a Medical Blue rounded square / shield
-  const iconElement = (
-    <svg width={iconSize} height={iconSize} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-      {/* Container background: Medical Blue (#1565C0) or translucent white for monochrome */}
-      <rect width="64" height="64" rx="16" fill={isDark ? "rgba(255, 255, 255, 0.15)" : "#1565C0"} />
-      
-      {/* Left and Right Earpiece tubes forming the outer legs of 'M' */}
-      <path 
-        d="M 18 18 V 34 C 18 42, 32 40, 32 28 C 32 40, 46 42, 46 34 V 18" 
-        stroke="#FFFFFF" 
-        strokeWidth="4.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
+  const strokeColor =
+    variant === "monochrome"
+      ? "#FFFFFF"
+      : variant === "monochrome-dark"
+      ? "#1565C0"
+      : "#FFFFFF";
+
+  // ── Text colors ──────────────────────────────────────────────────────────
+  const brandColor = isWhite ? "#FFFFFF" : "#12344D";
+  const accentColor = isWhite ? "rgba(255,255,255,0.75)" : "#1565C0";
+
+  // ── The Icon SVG ─────────────────────────────────────────────────────────
+  const iconSvg = (
+    <svg
+      width={iconSize}
+      height={iconSize}
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      style={{ flexShrink: 0, display: "block" }}
+    >
+      {/* Rounded square container */}
+      <rect width="64" height="64" rx="14" fill={containerFill} />
+
+      {/* ── Monoline stethoscope-M ────────────────────────────────────────
+          Left leg: curves up to left earbud tip
+          Center arch: connects left peak to right peak (the valley of M)
+          Right leg: curves up to right earbud tip
+          Drop tube: vertical line from center arch to chest piece
+          Chest piece: open circle (diaphragm)
+      ─────────────────────────────────────────────────────────────────── */}
+
+      {/* Left earpiece — arc from left peak to left tube going down */}
+      <path
+        d="M 21 13 C 18 13, 15 15.5, 15 19 L 15 28"
+        stroke={strokeColor}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
       />
-      
-      {/* Center drop tube going from 'M' peak down to the chest piece */}
-      <path 
-        d="M 32 28 V 44" 
-        stroke="#FFFFFF" 
-        strokeWidth="4.5" 
-        strokeLinecap="round" 
+
+      {/* Left tube to center valley of M */}
+      <path
+        d="M 15 28 C 15 35, 32 35, 32 28"
+        stroke={strokeColor}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
       />
-      
-      {/* Earbud tips (Top left and right of the 'M') */}
-      <circle cx="18" cy="15" r="3.5" fill="#FFFFFF" />
-      <circle cx="46" cy="15" r="3.5" fill="#FFFFFF" />
-      
-      {/* Stethoscope Chest Piece (Bottom Center) */}
-      <circle cx="32" cy="49" r="6" fill="#FFFFFF" />
+
+      {/* Right tube from center valley of M */}
+      <path
+        d="M 32 28 C 32 35, 49 35, 49 28"
+        stroke={strokeColor}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+
+      {/* Right earpiece — arc from right tube going up to right earbud */}
+      <path
+        d="M 49 28 L 49 19 C 49 15.5, 46 13, 43 13"
+        stroke={strokeColor}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+
+      {/* Earbud tips — small filled circles at top of each leg */}
+      <circle cx="21" cy="13" r="3.2" fill={strokeColor} />
+      <circle cx="43" cy="13" r="3.2" fill={strokeColor} />
+
+      {/* Drop tube — from center arch downward */}
+      <path
+        d="M 32 35 L 32 46"
+        stroke={strokeColor}
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+      />
+
+      {/* Chest piece (diaphragm) — open circle */}
+      <circle
+        cx="32"
+        cy="51"
+        r="5"
+        stroke={strokeColor}
+        strokeWidth="3.5"
+        fill="none"
+      />
     </svg>
   );
 
-  if (isCompact) {
+  const wordmark = !isIconOnly && (
+    <div
+      style={{
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        fontSize: textSize,
+        fontWeight: 800,
+        letterSpacing: "-0.035em",
+        color: brandColor,
+        lineHeight: 1,
+        userSelect: "none",
+      }}
+    >
+      Medi<span style={{ color: accentColor, fontWeight: 800 }}>Slot</span>
+      <span
+        style={{
+          fontSize: "0.6em",
+          fontWeight: 700,
+          letterSpacing: "-0.01em",
+          color: accentColor,
+          marginLeft: "3px",
+          verticalAlign: "middle",
+          opacity: 0.9,
+        }}
+      >
+        AI
+      </span>
+    </div>
+  );
+
+  if (!to) {
     return (
-      <Link to={to} style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
-        {iconElement}
-      </Link>
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: size === "xs" || size === "sm" ? "7px" : "10px",
+          ...style,
+        }}
+      >
+        {iconSvg}
+        {wordmark}
+      </div>
     );
   }
 
   return (
-    <Link to={to} style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-      {iconElement}
-      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: textSize, fontWeight: 800, letterSpacing: "-0.03em", color: isDark ? "#FFFFFF" : "#12344D", lineHeight: 1 }}>
-        MediSlot<span style={{ color: isDark ? "#DFF2FA" : "#1565C0", marginLeft: "3px" }}>AI</span>
-      </div>
+    <Link
+      to={to}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: size === "xs" || size === "sm" ? "7px" : "10px",
+        textDecoration: "none",
+        ...style,
+      }}
+    >
+      {iconSvg}
+      {wordmark}
     </Link>
   );
 }
