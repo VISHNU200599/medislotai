@@ -161,6 +161,29 @@ async function seedDatabase() {
   ];
 
   // ── Users (doctors & admins) ───────────────────────────────────────────────
+  const demoPatientUser = {
+    id: "user-demo-patient",
+    email: "demo@patient.com",
+    password_hash: hashedPassword,
+    role: "PATIENT",
+    is_verified: true,
+    is_active: true,
+    created_at: new Date().toISOString(),
+  };
+  const demoPatient = {
+    id: "pat-demo-001",
+    user_id: "user-demo-patient",
+    full_name: "Demo Patient",
+    phone: "+91-9000000000",
+    date_of_birth: "1995-06-15",
+    gender: "Male",
+    blood_group: "O+",
+    address: "123 Demo Street, Mumbai, Maharashtra",
+    profile_pic: "https://ui-avatars.com/api/?name=Demo+Patient&background=2563EB&color=fff&size=200",
+    emergency_contact: null,
+    created_at: new Date().toISOString(),
+  };
+
   const doctorUsers = [
     { id: "user-d001", email: "dr.sharma@medislot.com", password_hash: hashedPassword, role: "DOCTOR", is_verified: true, is_active: true, created_at: new Date().toISOString() },
     { id: "user-d002", email: "dr.patel@medislot.com", password_hash: hashedPassword, role: "DOCTOR", is_verified: true, is_active: true, created_at: new Date().toISOString() },
@@ -280,7 +303,8 @@ async function seedDatabase() {
 
   db.hospitals = hospitals;
   db.departments = departments;
-  db.users = [...doctorUsers, ...adminUsers];
+  db.users = [...doctorUsers, ...adminUsers, demoPatientUser];
+  db.patients = [demoPatient];
   db.doctors = doctors;
   db.slots = slots;
   db.hospitalAdmins = hospitalAdmins;

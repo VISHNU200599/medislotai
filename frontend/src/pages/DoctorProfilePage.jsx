@@ -1,7 +1,7 @@
 // src/pages/DoctorProfilePage.jsx
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, MapPin, Clock, Award, CheckCircle, Calendar, ChevronLeft, ShieldAlert, ShieldCheck, Building2, ThumbsUp, MessageSquare, Check, BookOpen, Stethoscope, Heart } from "lucide-react";
+import { Star, MapPin, Clock, Award, CheckCircle, Calendar, ChevronLeft, ShieldAlert, ShieldCheck, Building2, ThumbsUp, MessageSquare, Check, BookOpen, Stethoscope, Heart, ArrowLeft } from "lucide-react";
 import { doctorsAPI } from "../services/api";
 import { format, addDays } from "date-fns";
 import Navbar from "../components/layout/Navbar";

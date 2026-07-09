@@ -85,4 +85,14 @@ export const departmentsAPI = {
   getAll: (params) => api.get("/departments", { params }),
 };
 
+// ─── Ambulance ───────────────────────────────────────────────────────────────
+export const ambulanceAPI = {
+  request: (data) => api.post("/ambulance/request", data),
+  getMyRequests: () => api.get("/ambulance/my-requests"),
+  cancel: (id) => api.patch(`/ambulance/${id}/cancel`),
+  getAll: (params) => api.get("/ambulance", { params }),
+  assignAmbulance: (id, data) => api.patch(`/ambulance/${id}/assign`, data),
+  updateStatus: (id, data) => api.patch(`/ambulance/${id}/status`, data),
+};
+
 export default api;

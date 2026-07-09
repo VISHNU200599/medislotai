@@ -146,7 +146,7 @@ export default function PatientDashboard() {
           { title: "Specialist Roster", desc: "Browse 2,500+ verified doctors", icon: Search, link: "/doctors", color: "var(--brand-primary)", bg: "var(--bg-muted)" },
           { title: "Hospital Network", desc: "Find accredited medical clinics", icon: MapPin, link: "/hospitals", color: "var(--brand-accent)", bg: "rgba(255, 122, 89, 0.15)" },
           { title: "Health Records", desc: "View encrypted clinical reports", icon: FileText, link: "/patient/profile", color: "var(--status-success)", bg: "var(--status-success-bg)" },
-          { title: "24/7 Helpline", desc: "Immediate ambulance & triage", icon: PhoneCall, action: () => toast.success("Connecting to 24/7 Triage Coordinator (Ext 102)..."), color: "var(--status-danger)", bg: "var(--status-danger-bg)" },
+          { title: "Emergency Ambulance", desc: "Request ambulance & emergency transport", icon: PhoneCall, link: "/patient/ambulance", color: "var(--status-danger)", bg: "var(--status-danger-bg)" },
         ].map((item, idx) => {
           const Icon = item.icon;
           const content = (

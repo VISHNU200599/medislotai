@@ -1,7 +1,7 @@
 // src/pages/HospitalProfilePage.jsx
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapPin, Phone, Star, Users, Building2, Award, Stethoscope, Clock, Heart, Activity } from "lucide-react";
+import { MapPin, Phone, Star, Users, Building2, Award, Stethoscope, Clock, Heart, Activity, ArrowLeft } from "lucide-react";
 import { hospitalsAPI } from "../services/api";
 import Navbar from "../components/layout/Navbar";
 
@@ -37,6 +37,14 @@ export default function HospitalProfilePage() {
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-base)" }}>
       <Navbar />
+      <div className="container" style={{ maxWidth: "1160px", paddingTop: 16, paddingLeft: 24, paddingRight: 24 }}>
+        <Link to="/hospitals" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-secondary)", fontSize: "0.85rem", fontWeight: 600, textDecoration: "none", transition: "color 150ms ease" }}
+          onMouseOver={e => e.currentTarget.style.color = "var(--brand-primary)"}
+          onMouseOut={e => e.currentTarget.style.color = "var(--text-secondary)"}
+        >
+          <ArrowLeft size={16} /> Back to Hospitals
+        </Link>
+      </div>
       {/* Cover Image (Solid Medical Blue Overlay, No Gradients!) */}
       <div style={{ height: "280px", position: "relative", backgroundColor: "var(--bg-dark)" }}>
         <img src={hospital.cover_image_url} alt={hospital.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />

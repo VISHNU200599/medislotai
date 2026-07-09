@@ -38,15 +38,80 @@ if (process.env.NODE_ENV !== "test") {
   app.use(morgan("dev"));
 }
 
-// ─── Health Check ─────────────────────────────────────────────────────────────
+// ─── Health Check & MongoDB Verification ──────────────────────────────────────
+const { getDBStatus } = require("./config/database");
+const mongoose = require("mongoose");
+
 app.get("/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "🏥 MediSlot AI API is healthy",
+  const dbStatus = getDBStatus();
+  res.status(dbStatus.isConnected ? 200 : 503).json({
+    success: dbStatus.isConnected,
+    message: dbStatus.isConnected 
+      ? "🏥 MediSlot AI API & MongoDB Atlas are healthy" 
+      : "⚠️ MediSlot AI API is running, but MongoDB Atlas is disconnected",
     version: "1.0.0",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
+    database: dbStatus,
   });
+});
+
+// Live CRUD Verification Endpoint
+app.get("/api/v1/health/db", async (req, res) => {
+  const dbStatus = getDBStatus();
+  if (!dbStatus.isConnected) {
+    return res.status(503).json({
+      success: false,
+      message: "Cannot verify CRUD: MongoDB Atlas is disconnected.",
+      database: dbStatus,
+      hint: "Please check MONGODB_URI in backend/.env",
+    });
+  }
+
+  try {
+    const VerifySchema = new mongoose.Schema({
+      testId: String,
+      message: String,
+      status: String,
+      createdAt: { type: Date, default: Date.now },
+    });
+    const VerifyModel = mongoose.models.AtlasVerifyAPI || mongoose.model("AtlasVerifyAPI", VerifySchema);
+
+    // 1. CREATE
+    const testDoc = await VerifyModel.create({
+      testId: `API-VERIFY-${Date.now()}`,
+      message: "MongoDB Atlas API CRUD Test",
+      status: "CREATED",
+    });
+
+    // 2. READ
+    const readDoc = await VerifyModel.findById(testDoc._id);
+
+    // 3. UPDATE
+    readDoc.status = "UPDATED";
+    await readDoc.save();
+
+    // 4. DELETE
+    await VerifyModel.findByIdAndDelete(testDoc._id);
+
+    res.status(200).json({
+      success: true,
+      message: "🎉 All 4 CRUD operations (Create, Read, Update, Delete) succeeded on MongoDB Atlas!",
+      database: dbStatus,
+      crud_test_results: {
+        create: { success: true, id: testDoc._id },
+        read: { success: true, message: readDoc.message },
+        update: { success: true, new_status: readDoc.status },
+        delete: { success: true, deleted_id: testDoc._id },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "CRUD Verification Failed on MongoDB Atlas",
+      error: error.message,
+    });
+  }
 });
 
 // ─── Routes ───────────────────────────────────────────────────────────────────

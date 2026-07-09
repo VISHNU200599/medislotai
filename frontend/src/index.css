@@ -606,13 +606,97 @@ tbody tr:hover { background-color: var(--bg-muted); }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
 /* ── Responsive Rules ────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   :root { --sidebar-width: 0px; }
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); width: 250px; }
-  .main-content { margin-left: 0; }
-  .navbar-links { display: none; }
-  .dashboard-body { padding: var(--space-md); }
+  
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  
+  /* Sidebar hidden off-screen on mobile */
+  .sidebar-container {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px !important;
+    z-index: 400;
+    transform: translateX(-100%);
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-modal);
+  }
+
+  .sidebar-container.sidebar-mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Show hamburger on mobile */
+  .sidebar-hamburger {
+    display: flex !important;
+  }
+
+  /* Show close button inside sidebar on mobile */
+  .sidebar-mobile-close {
+    display: flex !important;
+  }
+  
+  /* Main content fills full width */
+  .main-content {
+    margin-left: 0 !important;
+    padding-top: 64px;
+  }
+  
+  .topbar {
+    padding: 0 16px 0 64px !important;
+  }
+
+  .dashboard-body {
+    padding: 16px !important;
+  }
+
+  /* Responsive table — stack on mobile */
+  table { display: block; overflow-x: auto; }
+  
+  /* Stack grid layouts */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .topbar {
+    padding: 0 12px 0 60px !important;
+  }
+  
+  .dashboard-body {
+    padding: 12px !important;
+  }
+}
+
+/* ── Emergency / Ambulance Sidebar Link ───────────────────────────────────── */
+.sidebar-link-emergency {
+  background: rgba(220, 38, 38, 0.12) !important;
+  color: #FFA0A0 !important;
+  border: 1px solid rgba(220, 38, 38, 0.2) !important;
+  margin-top: 8px !important;
+}
+.sidebar-link-emergency:hover {
+  background: rgba(220, 38, 38, 0.22) !important;
+  color: #FFCFCF !important;
+}
+.sidebar-link-emergency.active {
+  background: rgba(220, 38, 38, 0.3) !important;
+  color: #FFFFFF !important;
+}
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
 }
 
 /* ── Spinner ─────────────────────────────────────────────────────────────── */
@@ -635,3 +719,4 @@ tbody tr:hover { background-color: var(--bg-muted); }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
 ::-webkit-scrollbar-thumb { background: #B8D6ED; border-radius: var(--radius-full); }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+

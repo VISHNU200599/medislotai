@@ -13,12 +13,14 @@ import HospitalsPage from "./pages/HospitalsPage";
 import HospitalProfilePage from "./pages/HospitalProfilePage";
 import DoctorsPage from "./pages/DoctorsPage";
 import DoctorProfilePage from "./pages/DoctorProfilePage";
+import NotFound from "./pages/NotFound";
 
 // Patient Pages
 import PatientDashboard from "./pages/patient/PatientDashboard";
 import PatientAppointments from "./pages/patient/PatientAppointments";
 import BookAppointment from "./pages/patient/BookAppointment";
 import PatientProfile from "./pages/patient/PatientProfile";
+import AmbulancePage from "./pages/patient/AmbulancePage";
 
 // Doctor Pages
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
@@ -30,6 +32,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminDoctors from "./pages/admin/AdminDoctors";
 import AdminDepartments from "./pages/admin/AdminDepartments";
 import AdminAppointments from "./pages/admin/AdminAppointments";
+import AdminAmbulance from "./pages/admin/AdminAmbulance";
 
 function App() {
   const initAuth = useAuthStore((s) => s.initAuth);
@@ -66,6 +69,7 @@ function App() {
         <Route path="/patient/appointments" element={<ProtectedRoute allowedRoles={["PATIENT"]}><PatientAppointments /></ProtectedRoute>} />
         <Route path="/patient/book/:doctorId" element={<ProtectedRoute allowedRoles={["PATIENT"]}><BookAppointment /></ProtectedRoute>} />
         <Route path="/patient/profile" element={<ProtectedRoute allowedRoles={["PATIENT"]}><PatientProfile /></ProtectedRoute>} />
+        <Route path="/patient/ambulance" element={<ProtectedRoute allowedRoles={["PATIENT"]}><AmbulancePage /></ProtectedRoute>} />
 
         {/* ── Doctor ──────────────────────────────────────────────────── */}
         <Route path="/doctor/dashboard" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><DoctorDashboard /></ProtectedRoute>} />
@@ -77,9 +81,10 @@ function App() {
         <Route path="/admin/doctors" element={<ProtectedRoute allowedRoles={["HOSPITAL_ADMIN"]}><AdminDoctors /></ProtectedRoute>} />
         <Route path="/admin/departments" element={<ProtectedRoute allowedRoles={["HOSPITAL_ADMIN"]}><AdminDepartments /></ProtectedRoute>} />
         <Route path="/admin/appointments" element={<ProtectedRoute allowedRoles={["HOSPITAL_ADMIN"]}><AdminAppointments /></ProtectedRoute>} />
+        <Route path="/admin/ambulance" element={<ProtectedRoute allowedRoles={["HOSPITAL_ADMIN"]}><AdminAmbulance /></ProtectedRoute>} />
 
-        {/* ── Fallback ─────────────────────────────────────────────────── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* ── 404 ─────────────────────────────────────────────────────── */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
