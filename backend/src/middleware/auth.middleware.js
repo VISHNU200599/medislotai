@@ -2,7 +2,7 @@
 const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
-const { db } = require("../config/db");
+const { User } = require("../models");
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
@@ -14,12 +14,15 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new ApiError(401, "Unauthorized - No token provided");
     }
 
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const decodedToken = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "medislot_super_secret_jwt_key_change_in_production_2024"
+    );
 
-    const user = db.users.find((u) => u.id === decodedToken.id);
+    const user = await User.findById(decodedToken.id);
 
     if (!user) {
-      throw new ApiError(401, "Invalid Access Token");
+      throw new ApiError(401, "Invalid Access Token - User not found in MongoDB Atlas");
     }
 
     if (!user.is_active) {
@@ -27,7 +30,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     }
 
     req.user = {
-      id: user.id,
+      id: user._id.toString(),
       email: user.email,
       role: user.role,
     };

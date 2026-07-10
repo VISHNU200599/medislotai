@@ -1,5 +1,6 @@
 // src/modules/hospitals/hospitals.controller.js
-const { db } = require("../../config/db");
+// Pure MongoDB Atlas Hospitals Controller
+const { Hospital, Doctor, Department } = require("../../models");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");
@@ -8,92 +9,123 @@ const asyncHandler = require("../../utils/asyncHandler");
 const getHospitals = asyncHandler(async (req, res) => {
   const { search, city, specialty, page = 1, limit = 10 } = req.query;
 
-  let hospitals = [...db.hospitals];
-
+  const query = {};
   if (search) {
-    const q = search.toLowerCase();
-    hospitals = hospitals.filter(
-      (h) =>
-        h.name.toLowerCase().includes(q) ||
-        h.city.toLowerCase().includes(q) ||
-        h.description.toLowerCase().includes(q)
-    );
+    const q = new RegExp(search, "i");
+    query.$or = [{ name: q }, { city: q }, { description: q }];
   }
-
   if (city) {
-    hospitals = hospitals.filter(
-      (h) => h.city.toLowerCase() === city.toLowerCase()
-    );
+    query.city = new RegExp(city, "i");
   }
-
   if (specialty) {
-    hospitals = hospitals.filter((h) =>
-      h.specialties?.some((s) => s.toLowerCase().includes(specialty.toLowerCase()))
-    );
+    query.specialties = new RegExp(specialty, "i");
   }
 
-  // Enrich with doctor count
-  hospitals = hospitals.map((h) => ({
-    ...h,
-    doctor_count: db.doctors.filter((d) => d.hospital_id === h.id).length,
-    department_count: db.departments.filter((d) => d.hospital_id === h.id).length,
+  const hospitals = await Hospital.find(query);
+  const doctors = await Doctor.find();
+  const departments = await Department.find();
+
+  const enriched = hospitals.map((h) => ({
+    ...h.toObject(),
+    doctor_count: doctors.filter((d) => d.hospital_id === h._id.toString()).length,
+    department_count: departments.filter((d) => d.hospital_id === h._id.toString()).length,
   }));
 
-  const total = hospitals.length;
+  const total = enriched.length;
   const start = (page - 1) * limit;
-  const paginated = hospitals.slice(start, start + parseInt(limit));
+  const paginated = enriched.slice(start, start + parseInt(limit));
 
-  return ApiResponse.paginated(res, paginated, { page: parseInt(page), limit: parseInt(limit), total }, "Hospitals fetched successfully");
+  return ApiResponse.paginated(res, paginated, { page: parseInt(page), limit: parseInt(limit), total }, "Hospitals fetched successfully from MongoDB Atlas");
 });
 
-// ─── Get Hospital by Slug ──────────────────────────────────────────────────────
+// ─── Get Hospital by Slug or ID ────────────────────────────────────────────────
 const getHospitalBySlug = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
-  const hospital = db.hospitals.find((h) => h.slug === slug);
-  if (!hospital) throw new ApiError(404, "Hospital not found");
+  let hospital = await Hospital.findOne({ slug });
+  if (!hospital) {
+    // try by ID if slug not found
+    hospital = await Hospital.findById(slug);
+  }
+  if (!hospital) throw new ApiError(404, "Hospital not found on MongoDB Atlas");
 
-  const departments = db.departments.filter((d) => d.hospital_id === hospital.id);
-  const doctors = db.doctors
-    .filter((d) => d.hospital_id === hospital.id)
-    .map((doc) => ({
-      ...doc,
-      department: departments.find((dept) => dept.id === doc.department_id),
-    }));
+  const departments = await Department.find({ hospital_id: hospital._id.toString() });
+  const doctors = await Doctor.find({ hospital_id: hospital._id.toString() });
 
-  const reviews = db.reviews.filter((r) => r.hospital_id === hospital.id);
+  const enrichedDoctors = doctors.map((doc) => ({
+    ...doc.toObject(),
+    department: departments.find((dept) => dept._id.toString() === doc.department_id),
+  }));
 
   return ApiResponse.success(res, {
-    ...hospital,
+    ...hospital.toObject(),
     departments,
-    doctors,
-    reviews,
+    doctors: enrichedDoctors,
+    reviews: [],
     doctor_count: doctors.length,
-    review_count: reviews.length,
+    review_count: 0,
   });
 });
 
 // ─── Get Doctors by Hospital ──────────────────────────────────────────────────
 const getHospitalDoctors = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { department_id } = req.query;
-
-  const hospital = db.hospitals.find((h) => h.id === id);
+  const hospital = await Hospital.findById(id);
   if (!hospital) throw new ApiError(404, "Hospital not found");
 
-  let doctors = db.doctors.filter((d) => d.hospital_id === id);
-
-  if (department_id) {
-    doctors = doctors.filter((d) => d.department_id === department_id);
+  const query = { hospital_id: id };
+  if (req.query.department_id) {
+    query.department_id = req.query.department_id;
   }
 
+  const doctors = await Doctor.find(query);
+  const departments = await Department.find({ hospital_id: id });
+
   const enriched = doctors.map((doc) => ({
-    ...doc,
-    department: db.departments.find((dept) => dept.id === doc.department_id),
-    hospital: { id: hospital.id, name: hospital.name, city: hospital.city },
+    ...doc.toObject(),
+    department: departments.find((dept) => dept._id.toString() === doc.department_id),
+    hospital: { id: hospital._id, name: hospital.name, city: hospital.city },
   }));
 
   return ApiResponse.success(res, enriched);
 });
 
-module.exports = { getHospitals, getHospitalBySlug, getHospitalDoctors };
+// ─── Create Hospital (CRUD) ───────────────────────────────────────────────────
+const createHospital = asyncHandler(async (req, res) => {
+  const { name, slug, address, city, state, pincode, phone, email, website, beds, specialties } = req.body;
+  if (!name || !address || !city) throw new ApiError(400, "Name, address, and city are required");
+
+  const newHospital = await Hospital.create({
+    name,
+    slug: slug || name.toLowerCase().replace(/\s+/g, "-"),
+    address,
+    city,
+    state: state || "Maharashtra",
+    pincode: pincode || "400001",
+    phone: phone || null,
+    email: email || null,
+    website: website || null,
+    beds: beds || 200,
+    specialties: specialties || ["General Medicine"],
+  });
+
+  return ApiResponse.success(res, newHospital, "Hospital created successfully on MongoDB Atlas", 201);
+});
+
+// ─── Update Hospital (CRUD) ───────────────────────────────────────────────────
+const updateHospital = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const hospital = await Hospital.findByIdAndUpdate(id, req.body, { new: true });
+  if (!hospital) throw new ApiError(404, "Hospital not found");
+  return ApiResponse.success(res, hospital, "Hospital updated successfully");
+});
+
+// ─── Delete Hospital (CRUD) ───────────────────────────────────────────────────
+const deleteHospital = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const hospital = await Hospital.findByIdAndDelete(id);
+  if (!hospital) throw new ApiError(404, "Hospital not found");
+  return ApiResponse.success(res, { id }, "Hospital deleted successfully");
+});
+
+module.exports = { getHospitals, getHospitalBySlug, getHospitalDoctors, createHospital, updateHospital, deleteHospital };

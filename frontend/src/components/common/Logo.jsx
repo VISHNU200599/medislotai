@@ -1,174 +1,141 @@
 // src/components/common/Logo.jsx
-// MediSlot AI — Premium Brand Logo System
-// Abstract monoline stethoscope forming an "M" shape
-// Designed to meet startup-quality standards: Apple Health / Stripe aesthetic
+// MediSlot — Official Brand Identity Logo System
+// Pure Flat Geometric Medical Plus (+) Symbol • Zero Gradients • Zero Shadows
+// Typography: Manrope / Inter ExtraBold (800) • Horizontal Alignment
 
+import React from "react";
 import { Link } from "react-router-dom";
 
 /**
- * MediSlot AI Logo
+ * MediSlot Logo Component
  *
- * @param {"primary" | "monochrome" | "monochrome-dark" | "icon-only"} variant
- *   primary          = blue icon + dark text (default, for light backgrounds)
- *   monochrome       = white icon + white text (for dark/sidebar backgrounds)
- *   monochrome-dark  = dark icon + dark text (for light backgrounds without color)
- *   icon-only        = renders only the icon square, no wordmark
+ * @param {"primary" | "white" | "monochrome" | "dark" | "monochrome-dark" | "icon-only" | "compact" | "app-icon"} variant
+ *   primary          = Blue plus icon (#2563EB) + "Medi" Navy (#0F172A) + "Slot" Blue (#2563EB)
+ *   white/monochrome = White plus icon (#FFFFFF) + White text (#FFFFFF) + Transparent bg
+ *   dark/monochrome-dark = Navy plus icon (#0F172A) + Navy text (#0F172A)
+ *   icon-only/compact = Renders only the plus symbol (no wordmark)
+ *   app-icon         = Rounded square blue bg (#2563EB) + White plus symbol (#FFFFFF)
  *
  * @param {"xs" | "sm" | "md" | "lg" | "xl"} size
  */
-export default function Logo({ variant = "primary", size = "md", to = "/", style = {} }) {
-  const isWhite = variant === "monochrome";
-  const isIconOnly = variant === "icon-only";
+export default function Logo({
+  variant = "primary",
+  size = "md",
+  to = "/",
+  style = {},
+  className = "",
+  iconColorOverride = null,
+  textColorOverride = null
+}) {
+  const isWhite = variant === "white" || variant === "monochrome";
+  const isDark = variant === "dark" || variant === "monochrome-dark";
+  const isAppIcon = variant === "app-icon";
+  const isIconOnly = variant === "icon-only" || variant === "compact" || isAppIcon;
 
-  // Icon dimensions
-  const iconSize = { xs: 22, sm: 28, md: 36, lg: 44, xl: 56 }[size] || 36;
+  // Proportional icon dimensions
+  const iconSize = { xs: 24, sm: 28, md: 36, lg: 44, xl: 56 }[size] || 36;
 
-  // Text dimensions
-  const textSize = { xs: "0.9rem", sm: "1.1rem", md: "1.35rem", lg: "1.6rem", xl: "2rem" }[size] || "1.35rem";
+  // Proportional wordmark typography (Manrope / Inter ExtraBold)
+  const textSize = { xs: "1.05rem", sm: "1.25rem", md: "1.5rem", lg: "1.85rem", xl: "2.35rem" }[size] || "1.5rem";
 
-  // ── Icon colors ──────────────────────────────────────────────────────────
-  const containerFill =
-    variant === "monochrome"
-      ? "rgba(255,255,255,0.14)"
-      : variant === "monochrome-dark"
-      ? "#EDF7FF"
-      : "#1565C0";
+  // ── Icon & Wordmark Color Mapping (Exact requested palette) ────────────────
+  let plusColor = "#1877F2"; // Modern Facebook Blue
+  let mediColor = "#1F2937"; // Professional Text Dark
+  let slotColor = "#1877F2"; // Modern Facebook Blue
 
-  const strokeColor =
-    variant === "monochrome"
-      ? "#FFFFFF"
-      : variant === "monochrome-dark"
-      ? "#1565C0"
-      : "#FFFFFF";
+  if (isWhite) {
+    plusColor = "#FFFFFF";
+    mediColor = "#FFFFFF";
+    slotColor = "#FFFFFF";
+  } else if (isDark) {
+    plusColor = "#1F2937";
+    mediColor = "#1F2937";
+    slotColor = "#1F2937";
+  } else if (isAppIcon) {
+    plusColor = "#FFFFFF";
+  }
 
-  // ── Text colors ──────────────────────────────────────────────────────────
-  const brandColor = isWhite ? "#FFFFFF" : "#12344D";
-  const accentColor = isWhite ? "rgba(255,255,255,0.75)" : "#1565C0";
+  if (iconColorOverride) plusColor = iconColorOverride;
+  if (textColorOverride) {
+    mediColor = textColorOverride;
+    slotColor = textColorOverride;
+  }
 
-  // ── The Icon SVG ─────────────────────────────────────────────────────────
+  // ── Symmetrical Bold Medical Plus (+) Vector SVG (100x100 Grid) ────────────
   const iconSvg = (
     <svg
       width={iconSize}
       height={iconSize}
-      viewBox="0 0 64 64"
+      viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
       style={{ flexShrink: 0, display: "block" }}
     >
-      {/* Rounded square container */}
-      <rect width="64" height="64" rx="14" fill={containerFill} />
-
-      {/* ── Monoline stethoscope-M ────────────────────────────────────────
-          Left leg: curves up to left earbud tip
-          Center arch: connects left peak to right peak (the valley of M)
-          Right leg: curves up to right earbud tip
-          Drop tube: vertical line from center arch to chest piece
-          Chest piece: open circle (diaphragm)
-      ─────────────────────────────────────────────────────────────────── */}
-
-      {/* Left earpiece — arc from left peak to left tube going down */}
-      <path
-        d="M 21 13 C 18 13, 15 15.5, 15 19 L 15 28"
-        stroke={strokeColor}
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-
-      {/* Left tube to center valley of M */}
-      <path
-        d="M 15 28 C 15 35, 32 35, 32 28"
-        stroke={strokeColor}
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-
-      {/* Right tube from center valley of M */}
-      <path
-        d="M 32 28 C 32 35, 49 35, 49 28"
-        stroke={strokeColor}
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-
-      {/* Right earpiece — arc from right tube going up to right earbud */}
-      <path
-        d="M 49 28 L 49 19 C 49 15.5, 46 13, 43 13"
-        stroke={strokeColor}
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-
-      {/* Earbud tips — small filled circles at top of each leg */}
-      <circle cx="21" cy="13" r="3.2" fill={strokeColor} />
-      <circle cx="43" cy="13" r="3.2" fill={strokeColor} />
-
-      {/* Drop tube — from center arch downward */}
-      <path
-        d="M 32 35 L 32 46"
-        stroke={strokeColor}
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
-
-      {/* Chest piece (diaphragm) — open circle */}
-      <circle
-        cx="32"
-        cy="51"
-        r="5"
-        stroke={strokeColor}
-        strokeWidth="3.5"
-        fill="none"
-      />
+      {isAppIcon ? (
+        <>
+          {/* Rounded square container for App Icon mode */}
+          <rect width="100" height="100" rx="24" fill="#1877F2" />
+          <path
+            d="M 50 22 L 50 78"
+            stroke="#FFFFFF"
+            strokeWidth="20"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 22 50 L 78 50"
+            stroke="#FFFFFF"
+            strokeWidth="20"
+            strokeLinecap="round"
+          />
+        </>
+      ) : (
+        <>
+          {/* Bold, Minimal, Perfectly Symmetrical Rounded Medical Plus (+) */}
+          <path
+            d="M 50 16 L 50 84"
+            stroke={plusColor}
+            strokeWidth="24"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 16 50 L 84 50"
+            stroke={plusColor}
+            strokeWidth="24"
+            strokeLinecap="round"
+          />
+        </>
+      )}
     </svg>
   );
 
   const wordmark = !isIconOnly && (
     <div
       style={{
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        fontFamily: "'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         fontSize: textSize,
         fontWeight: 800,
         letterSpacing: "-0.035em",
-        color: brandColor,
         lineHeight: 1,
         userSelect: "none",
+        display: "flex",
+        alignItems: "center"
       }}
     >
-      Medi<span style={{ color: accentColor, fontWeight: 800 }}>Slot</span>
-      <span
-        style={{
-          fontSize: "0.6em",
-          fontWeight: 700,
-          letterSpacing: "-0.01em",
-          color: accentColor,
-          marginLeft: "3px",
-          verticalAlign: "middle",
-          opacity: 0.9,
-        }}
-      >
-        AI
-      </span>
+      <span style={{ color: mediColor, fontWeight: 800 }}>Medi</span>
+      <span style={{ color: slotColor, fontWeight: 800 }}>Slot</span>
     </div>
   );
 
   if (!to) {
     return (
       <div
+        className={`medislot-brand-logo ${className}`}
         style={{
           display: "inline-flex",
           alignItems: "center",
-          gap: size === "xs" || size === "sm" ? "7px" : "10px",
-          ...style,
+          gap: size === "xs" || size === "sm" ? "8px" : "11px",
+          ...style
         }}
       >
         {iconSvg}
@@ -180,12 +147,13 @@ export default function Logo({ variant = "primary", size = "md", to = "/", style
   return (
     <Link
       to={to}
+      className={`medislot-brand-logo ${className}`}
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: size === "xs" || size === "sm" ? "7px" : "10px",
+        gap: size === "xs" || size === "sm" ? "8px" : "11px",
         textDecoration: "none",
-        ...style,
+        ...style
       }}
     >
       {iconSvg}

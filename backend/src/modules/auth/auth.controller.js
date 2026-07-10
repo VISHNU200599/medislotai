@@ -1,25 +1,28 @@
 // src/modules/auth/auth.controller.js
+// Pure MongoDB Atlas Authentication Controller
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-const { db } = require("../../config/db");
+const { User, Patient, Doctor, Hospital, Department } = require("../../models");
 const ApiError = require("../../utils/ApiError");
 const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");
 
 // ─── Token Generators ──────────────────────────────────────────────────────────
 const generateAccessToken = (user) => {
+  const userId = user.id || user._id.toString();
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "15m" }
+    { id: userId, email: user.email, role: user.role },
+    process.env.JWT_SECRET || "medislot_super_secret_jwt_key_change_in_production_2024",
+    { expiresIn: process.env.JWT_EXPIRES_IN || "24h" }
   );
 };
 
 const generateRefreshToken = (user) => {
+  const userId = user.id || user._id.toString();
   return jwt.sign(
-    { id: user.id },
-    process.env.JWT_REFRESH_SECRET,
+    { id: userId },
+    process.env.JWT_REFRESH_SECRET || "medislot_refresh_secret_key_change_in_production_2024",
     { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d" }
   );
 };
@@ -30,15 +33,15 @@ const cookieOptions = {
   sameSite: "strict",
 };
 
-// ─── Register (Patient only) ──────────────────────────────────────────────────
+// ─── Register (Universal: Patient, Doctor, Hospital Admin) ─────────────────────
 const register = asyncHandler(async (req, res) => {
-  const { email, password, full_name, phone, date_of_birth, gender } = req.body;
+  const { email, password, full_name, phone, date_of_birth, gender, role } = req.body;
 
   if (!email || !password || !full_name) {
     throw new ApiError(400, "Email, password, and full name are required");
   }
 
-  const existingUser = db.users.find((u) => u.email === email.toLowerCase());
+  const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
   if (existingUser) {
     throw new ApiError(409, "User with this email already exists");
   }
@@ -47,51 +50,87 @@ const register = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Password must be at least 6 characters");
   }
 
+  const userRole = (role || "PATIENT").toUpperCase();
+  if (!["PATIENT", "DOCTOR", "HOSPITAL_ADMIN"].includes(userRole)) {
+    throw new ApiError(400, "Invalid account role selected");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
   const userId = uuidv4();
-  const patientId = uuidv4();
+  const profileId = uuidv4();
 
-  const newUser = {
-    id: userId,
-    email: email.toLowerCase(),
+  const newUser = await User.create({
+    _id: userId,
+    email: email.toLowerCase().trim(),
     password_hash: hashedPassword,
-    role: "PATIENT",
+    role: userRole,
     is_verified: true,
     is_active: true,
-    created_at: new Date().toISOString(),
-  };
+  });
 
-  const newPatient = {
-    id: patientId,
-    user_id: userId,
-    full_name,
-    phone: phone || null,
-    date_of_birth: date_of_birth || null,
-    gender: gender || null,
-    blood_group: null,
-    address: null,
-    profile_pic: `https://ui-avatars.com/api/?name=${encodeURIComponent(full_name)}&background=2563EB&color=fff&size=200`,
-    emergency_contact: null,
-    created_at: new Date().toISOString(),
-  };
+  let newProfile = null;
+  if (userRole === "PATIENT") {
+    newProfile = await Patient.create({
+      _id: profileId,
+      user_id: userId,
+      full_name: full_name.trim(),
+      phone: phone || null,
+      date_of_birth: date_of_birth || null,
+      gender: gender || "Male",
+      profile_pic: `https://ui-avatars.com/api/?name=${encodeURIComponent(full_name)}&background=1877F2&color=fff&size=200`,
+    });
+  } else if (userRole === "DOCTOR") {
+    const defaultHospital = await Hospital.findOne() || { _id: "hosp-001", name: "Apollo Super Specialty Hospitals" };
+    const defaultDept = await Department.findOne() || { _id: "dept-001", name: "Cardiology" };
 
-  db.users.push(newUser);
-  db.patients.push(newPatient);
+    newProfile = await Doctor.create({
+      _id: profileId,
+      user_id: userId,
+      full_name: full_name.startsWith("Dr.") ? full_name : `Dr. ${full_name.trim()}`,
+      email: email.toLowerCase().trim(),
+      phone: phone || "+91 9876543210",
+      hospital_id: defaultHospital._id,
+      department_id: defaultDept._id,
+      specialization: defaultDept.name || "Cardiology",
+      qualification: "MBBS, MD",
+      experience_years: 5,
+      consultation_fee: 800,
+      profile_pic: `https://ui-avatars.com/api/?name=${encodeURIComponent(full_name)}&background=1877F2&color=fff&size=200`,
+    });
+  } else if (userRole === "HOSPITAL_ADMIN") {
+    const defaultHospital = await Hospital.findOne();
+    if (defaultHospital) {
+      defaultHospital.user_id = userId;
+      await defaultHospital.save();
+      newProfile = defaultHospital;
+    } else {
+      newProfile = await Hospital.create({
+        _id: uuidv4(),
+        user_id: userId,
+        name: `${full_name.trim()}'s Multi-Specialty Hospital`,
+        slug: `hospital-${Date.now()}`,
+        address: "Healthcare Boulevard, Medical District",
+        city: "Mumbai",
+        state: "Maharashtra",
+        pincode: "400001",
+      });
+    }
+  }
 
   const accessToken = generateAccessToken(newUser);
   const refreshToken = generateRefreshToken(newUser);
 
   return res
     .status(201)
-    .cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 })
+    .cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 })
     .cookie("refreshToken", refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 })
     .json({
       success: true,
       statusCode: 201,
-      message: "Registration successful! Welcome to MediSlot AI.",
+      message: "Registration successful! Welcome to MediSlot.",
       data: {
-        user: { id: newUser.id, email: newUser.email, role: newUser.role },
-        patient: { id: newPatient.id, full_name: newPatient.full_name },
+        user: { id: newUser._id, email: newUser.email, role: newUser.role },
+        profile: newProfile,
         accessToken,
       },
     });
@@ -105,7 +144,7 @@ const login = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email and password are required");
   }
 
-  const user = db.users.find((u) => u.email === email.toLowerCase());
+  const user = await User.findOne({ email: email.toLowerCase().trim() });
   if (!user) {
     throw new ApiError(401, "Invalid email or password");
   }
@@ -122,26 +161,25 @@ const login = asyncHandler(async (req, res) => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  // Fetch role-specific profile
   let profile = null;
   if (user.role === "PATIENT") {
-    profile = db.patients.find((p) => p.user_id === user.id);
+    profile = await Patient.findOne({ user_id: user._id });
   } else if (user.role === "DOCTOR") {
-    profile = db.doctors.find((d) => d.user_id === user.id);
+    profile = await Doctor.findOne({ user_id: user._id });
   } else if (user.role === "HOSPITAL_ADMIN") {
-    profile = db.hospitalAdmins?.find((a) => a.user_id === user.id);
+    profile = await Hospital.findOne({ user_id: user._id }) || await Hospital.findOne();
   }
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 })
+    .cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 })
     .cookie("refreshToken", refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 })
     .json({
       success: true,
       statusCode: 200,
       message: "Login successful",
       data: {
-        user: { id: user.id, email: user.email, role: user.role },
+        user: { id: user._id, email: user.email, role: user.role },
         profile,
         accessToken,
       },
@@ -164,29 +202,26 @@ const logout = asyncHandler(async (req, res) => {
 
 // ─── Get Current User ─────────────────────────────────────────────────────────
 const getMe = asyncHandler(async (req, res) => {
-  const user = db.users.find((u) => u.id === req.user.id);
+  const user = await User.findById(req.user.id);
   if (!user) throw new ApiError(404, "User not found");
 
   let profile = null;
   if (user.role === "PATIENT") {
-    profile = db.patients.find((p) => p.user_id === user.id);
+    profile = await Patient.findOne({ user_id: user._id });
   } else if (user.role === "DOCTOR") {
-    const doctor = db.doctors.find((d) => d.user_id === user.id);
+    const doctor = await Doctor.findOne({ user_id: user._id });
     if (doctor) {
-      const hospital = db.hospitals.find((h) => h.id === doctor.hospital_id);
-      const department = db.departments.find((d) => d.id === doctor.department_id);
-      profile = { ...doctor, hospital, department };
+      const hospital = await Hospital.findById(doctor.hospital_id);
+      const department = await Department.findById(doctor.department_id);
+      profile = { ...doctor.toObject(), hospital, department };
     }
   } else if (user.role === "HOSPITAL_ADMIN") {
-    const admin = db.hospitalAdmins?.find((a) => a.user_id === user.id);
-    if (admin) {
-      const hospital = db.hospitals.find((h) => h.id === admin.hospital_id);
-      profile = { ...admin, hospital };
-    }
+    const hospital = await Hospital.findOne({ user_id: user._id }) || await Hospital.findOne();
+    profile = hospital;
   }
 
   return ApiResponse.success(res, {
-    user: { id: user.id, email: user.email, role: user.role },
+    user: { id: user._id, email: user.email, role: user.role },
     profile,
   });
 });
@@ -196,8 +231,8 @@ const refreshToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies?.refreshToken;
   if (!incomingRefreshToken) throw new ApiError(401, "Unauthorized");
 
-  const decoded = jwt.verify(incomingRefreshToken, process.env.JWT_REFRESH_SECRET);
-  const user = db.users.find((u) => u.id === decoded.id);
+  const decoded = jwt.verify(incomingRefreshToken, process.env.JWT_REFRESH_SECRET || "medislot_refresh_secret_key_change_in_production_2024");
+  const user = await User.findById(decoded.id);
   if (!user) throw new ApiError(401, "Invalid refresh token");
 
   const accessToken = generateAccessToken(user);
@@ -205,7 +240,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 })
+    .cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 })
     .cookie("refreshToken", newRefreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 })
     .json({
       success: true,

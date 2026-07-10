@@ -59,7 +59,7 @@ export default function Navbar() {
               <Link to="/login" className="btn btn-secondary btn-sm" style={{ fontWeight: 500 }}>
                 Sign In
               </Link>
-              <Link to="/register" className="btn btn-primary btn-sm" style={{ fontWeight: 500 }}>
+              <Link to="/get-started" className="btn btn-primary btn-sm" style={{ fontWeight: 500 }}>
                 Get Started
               </Link>
             </div>

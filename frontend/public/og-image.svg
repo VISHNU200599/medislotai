@@ -1,65 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
-  <!-- MediSlot AI — Social Preview / OG Image -->
-  <!-- Background -->
-  <rect width="1200" height="630" fill="#0B4F8C"/>
-
-  <!-- Subtle grid pattern -->
-  <defs>
-    <pattern id="grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-    </pattern>
-  </defs>
-  <rect width="1200" height="630" fill="url(#grid)"/>
-
-  <!-- Left section: Logo Icon (centered vertically, left-aligned) -->
-  <g transform="translate(120, 175)">
-    <!-- Icon container: rounded square Medical Blue -->
-    <rect width="280" height="280" rx="52" fill="#1565C0"/>
-
-    <!-- Abstract stethoscope M monoline icon (scaled 4.375x from 64-unit grid) -->
-    <!-- Left earpiece -->
-    <path d="M 92 57 C 79 57, 66 67, 66 83 L 66 122"
-      stroke="white" stroke-width="17.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <!-- Left arch to center valley -->
-    <path d="M 66 122 C 66 153, 140 153, 140 122"
-      stroke="white" stroke-width="17.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <!-- Right arch from center valley -->
-    <path d="M 140 122 C 140 153, 214 153, 214 122"
-      stroke="white" stroke-width="17.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <!-- Right earpiece -->
-    <path d="M 214 122 L 214 83 C 214 67, 201 57, 188 57"
-      stroke="white" stroke-width="17.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <!-- Earbud tips -->
-    <circle cx="92" cy="57" r="14" fill="white"/>
-    <circle cx="188" cy="57" r="14" fill="white"/>
-    <!-- Drop tube -->
-    <path d="M 140 153 L 140 200"
-      stroke="white" stroke-width="17.5" stroke-linecap="round" fill="none"/>
-    <!-- Chest piece -->
-    <circle cx="140" cy="222" r="21.8" stroke="white" stroke-width="15.3" fill="none"/>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- MediSlot — Social Preview / OG Image -->
+  <rect width="1200" height="630" fill="#0F172A" />
+  
+  <!-- Subtle decorative primary blue radial background -->
+  <circle cx="600" cy="315" r="480" fill="#2563EB" opacity="0.12" />
+  
+  <!-- Logo Card Container -->
+  <g transform="translate(140, 165)">
+    <!-- Icon Box (120x120) -->
+    <rect width="120" height="120" rx="28" fill="#2563EB" />
+    <path d="M 60 26 L 60 94" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" />
+    <path d="M 26 60 L 94 60" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" />
   </g>
-
-  <!-- Right section: Wordmark + Tagline -->
-  <text x="480" y="275"
-    font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif"
-    font-size="96"
-    font-weight="800"
-    letter-spacing="-3"
-    fill="white">MediSlot</text>
-  <text x="480" y="375"
-    font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif"
-    font-size="96"
-    font-weight="800"
-    letter-spacing="-3"
-    fill="rgba(255,255,255,0.55)">AI</text>
-
-  <text x="482" y="430"
-    font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif"
-    font-size="32"
-    font-weight="500"
-    letter-spacing="1"
-    fill="rgba(255,255,255,0.65)">Intelligent Healthcare Platform</text>
-
-  <!-- Bottom accent line -->
-  <rect x="480" y="462" width="80" height="4" rx="2" fill="#1565C0"/>
+  
+  <!-- Brand Wordmark -->
+  <text x="290" y="245" font-family="'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="76" font-weight="800" fill="#FFFFFF" letter-spacing="-2">Medi<tspan fill="#2563EB">Slot</tspan></text>
+  
+  <!-- Tagline -->
+  <text x="290" y="305" font-family="'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="34" font-weight="600" fill="#F8FBFF" opacity="0.9">Intelligent Healthcare &amp; Appointment Scheduling Platform</text>
+  
+  <!-- Feature Pills -->
+  <g transform="translate(290, 350)">
+    <rect x="0" y="0" width="220" height="46" rx="23" fill="rgba(255,255,255,0.12)" />
+    <text x="110" y="29" font-family="'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="middle">Verified Specialists</text>
+    
+    <rect x="235" y="0" width="220" height="46" rx="23" fill="rgba(255,255,255,0.12)" />
+    <text x="345" y="29" font-family="'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="middle">Instant Triage &amp; Booking</text>
+    
+    <rect x="470" y="0" width="240" height="46" rx="23" fill="rgba(255,255,255,0.12)" />
+    <text x="590" y="29" font-family="'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="middle">HIPAA-Inspired Security</text>
+  </g>
+  
+  <!-- Footer Note -->
+  <text x="140" y="550" font-family="'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="500" fill="rgba(255,255,255,0.5)">© 2026 MediSlot Healthcare Platforms Inc. • Enterprise SaaS System</text>
 </svg>

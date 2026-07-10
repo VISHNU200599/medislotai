@@ -29,10 +29,10 @@ const MOCK_REQUESTS = [
   },
   {
     id: "AMB-003",
-    patient_name: "Demo Patient",
-    patient_phone: "+91-9000000000",
+    patient_name: "Vikram Malhotra",
+    patient_phone: "+91-9820114522",
     emergency_type: "Respiratory Distress",
-    pickup_address: "123 Demo Street, Mumbai",
+    pickup_address: "14 Marine Drive, Mumbai",
     eta_minutes: 9,
     status: "EN_ROUTE",
     requested_at: "25 mins ago",

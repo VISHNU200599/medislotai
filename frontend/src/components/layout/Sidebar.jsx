@@ -56,12 +56,12 @@ export default function Sidebar() {
     <aside className="sidebar" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Logo Header */}
       <div className="sidebar-header" style={{ padding: "0 24px", height: "var(--navbar-height)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Logo variant="monochrome" size="sm" />
+        <Logo variant="primary" size="sm" />
         {/* Mobile close button */}
         <button
           onClick={closeMobile}
           className="sidebar-mobile-close"
-          style={{ background: "none", border: "none", color: "rgba(255,255,255,0.7)", cursor: "pointer", padding: 4, display: "none" }}
+          style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: 4, display: "none" }}
           aria-label="Close menu"
         >
           <X size={22} />
@@ -69,20 +69,20 @@ export default function Sidebar() {
       </div>
 
       {/* User Profile Card */}
-      <div style={{ padding: "20px", borderBottom: "1px solid rgba(255,255,255,0.1)", margin: "0 12px" }}>
+      <div style={{ padding: "20px", borderBottom: "1px solid var(--border)", margin: "0 12px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {profile?.profile_pic && !profile?.profile_pic.includes("ui-avatars.com") ? (
-            <img src={profile.profile_pic} alt="profile" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(255,255,255,0.2)" }} />
+            <img src={profile.profile_pic} alt="profile" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }} />
           ) : (
-            <div style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.15)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", fontWeight: 600, flexShrink: 0, border: "1px solid rgba(255,255,255,0.2)" }}>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "var(--bg-muted)", color: "var(--brand-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", fontWeight: 600, flexShrink: 0, border: "1px solid var(--border)" }}>
               {getInitials(profile?.full_name || "User")}
             </div>
           )}
           <div style={{ overflow: "hidden", flex: 1 }}>
-            <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-white)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {profile?.full_name || "Account User"}
             </div>
-            <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.7)", marginTop: 2, textTransform: "capitalize", fontWeight: 500 }}>
+            <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: 2, textTransform: "capitalize", fontWeight: 500 }}>
               {user?.role?.replace("_", " ")?.toLowerCase() || "Member"}
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function Sidebar() {
 
       {/* Navigation Menu */}
       <nav className="sidebar-menu" style={{ padding: "20px 16px", display: "flex", flexDirection: "column", gap: 4, flex: 1, overflowY: "auto" }}>
-        <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "4px 12px", marginBottom: 6 }}>
+        <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "4px 12px", marginBottom: 6 }}>
           Navigation
         </div>
 
@@ -111,7 +111,7 @@ export default function Sidebar() {
         {/* Discovery section — Patient only */}
         {user?.role === "PATIENT" && (
           <>
-            <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "4px 12px", marginTop: 20, marginBottom: 6 }}>
+            <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "4px 12px", marginTop: 20, marginBottom: 6 }}>
               Discovery
             </div>
             <NavLink to="/hospitals" onClick={closeMobile} className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} style={{ textDecoration: "none" }}>
@@ -125,7 +125,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom Footer */}
-      <div className="sidebar-footer" style={{ padding: 16, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+      <div className="sidebar-footer" style={{ padding: 16, borderTop: "1px solid var(--border)" }}>
         <button
           onClick={handleLogout}
           style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: "var(--radius-md)", border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.15)", color: "#FF8A8A", cursor: "pointer", fontSize: "0.875rem", fontWeight: 500, transition: "all 200ms ease" }}

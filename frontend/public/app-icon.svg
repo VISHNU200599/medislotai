@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- MediSlot App Icon — 512x512 -->
+  <rect width="512" height="512" rx="124" fill="#2563EB"/>
+  <path d="M 256 112 L 256 400" stroke="#FFFFFF" stroke-width="102" stroke-linecap="round"/>
+  <path d="M 112 256 L 400 256" stroke="#FFFFFF" stroke-width="102" stroke-linecap="round"/>
+</svg>

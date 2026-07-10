@@ -1,7 +1,7 @@
 {
   "name": "medislotai-backend",
   "version": "1.0.0",
-  "description": "MediSlot AI Backend API — Healthcare Platform",
+  "description": "MediSlot Backend API — Healthcare Platform",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -14,7 +14,7 @@
     "api",
     "medislot"
   ],
-  "author": "MediSlot AI Team",
+  "author": "MediSlot Team",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^3.1.14"

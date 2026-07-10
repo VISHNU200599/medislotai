@@ -16,7 +16,7 @@ const VerifyModel = mongoose.models.AtlasVerifyTest || mongoose.model("AtlasVeri
 const runCRUDVerification = async () => {
   console.log("");
   console.log("╔══════════════════════════════════════════════════════════════╗");
-  console.log("║           🔬 MediSlot AI — MongoDB Atlas CRUD Verify         ║");
+  console.log("║           🔬 MediSlot — MongoDB Atlas CRUD Verify            ║");
   console.log("╚══════════════════════════════════════════════════════════════╝");
   console.log("");
 
@@ -35,7 +35,7 @@ const runCRUDVerification = async () => {
     console.log("1️⃣  Testing CREATE (Insert Document)...");
     const testDoc = await VerifyModel.create({
       testId: `VERIFY-${Date.now()}`,
-      message: "MediSlot AI MongoDB Atlas Connection Test",
+      message: "MediSlot MongoDB Atlas Connection Test",
       status: "CREATED",
     });
     console.log(`   ✅ CREATE Success! Document ID: ${testDoc._id}`);

@@ -23,7 +23,7 @@ export default function AppointmentSlipModal({ appointment, onClose }) {
         <div style={{ backgroundColor: "var(--brand-dark)", color: "white", padding: "24px 28px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "relative" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--brand-secondary)", marginBottom: "6px" }}>
-              <ShieldCheck size={16} /> MediSlot AI • Verified Clinical Slip
+              <ShieldCheck size={16} /> MediSlot • Verified Clinical Slip
             </div>
             <h3 style={{ fontSize: "1.4rem", fontWeight: 800, margin: 0, color: "white" }}>Outpatient Consultation Pass</h3>
             <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.7)", margin: "4px 0 0" }}>Please present this slip at the hospital reception counter.</p>

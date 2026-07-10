@@ -6,6 +6,7 @@ import useAuthStore from "./store/authStore";
 import { ProtectedRoute, PublicRoute } from "./router/ProtectedRoute";
 
 // Public Pages
+import IntroScreen from "./pages/IntroScreen";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
@@ -54,13 +55,14 @@ function App() {
       />
       <Routes>
         {/* ── Public ─────────────────────────────────────────────────── */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<IntroScreen />} />
         <Route path="/hospitals" element={<HospitalsPage />} />
         <Route path="/hospitals/:slug" element={<HospitalProfilePage />} />
         <Route path="/doctors" element={<DoctorsPage />} />
         <Route path="/doctors/:id" element={<DoctorProfilePage />} />
 
         {/* ── Auth ────────────────────────────────────────────────────── */}
+        <Route path="/get-started" element={<PublicRoute><LoginPage initialStep={1} /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
 
